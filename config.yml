@@ -1,0 +1,6 @@
+name: 商品問い合わせプラグイン
+code: ProductContact
+version: 1.0.0
+event: ProductContactEvent
+service:
+    - ProductContactServiceProvider

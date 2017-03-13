@@ -1,0 +1,5 @@
+front.product.detail.initialize:
+    - [onFrontProductDetailInitialize, NORMAL]
+
+Product/detail.twig:
+    - [onRenderProductDetail, NORMAL]
