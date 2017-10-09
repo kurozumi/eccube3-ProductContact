@@ -40,6 +40,9 @@ class Version20170312115644 extends AbstractMigration
 
     }
     
+    /**
+     * dtb_page_layoutにページ情報を登録
+     */
     protected function createPageLayout()
     {
         $em = $this->app['orm.em'];
@@ -47,17 +50,28 @@ class Version20170312115644 extends AbstractMigration
         $DeviceType = $this->app['eccube.repository.master.device_type']
                 ->find(DeviceType::DEVICE_TYPE_PC);
         
-        $PageLayout = new PageLayout();
-        $PageLayout->setDeviceType($DeviceType);
-        $PageLayout->setName(self::PAGE_NAME);
-        $PageLayout->setUrl(self::URL);
-        $PageLayout->setEditFlg(PageLayout::EDIT_FLG_DEFAULT);
-        $em->persist($PageLayout);
-        $em->flush();
+        $PageLayout = $this->findPageLayout($DeviceType, self::URL);
+        if($PageLayout === false) {
+            $PageLayout = new PageLayout();
+            $PageLayout->setDeviceType($DeviceType);
+            $PageLayout->setName(self::PAGE_NAME);
+            $PageLayout->setUrl(self::URL);
+            $PageLayout->setEditFlg(PageLayout::EDIT_FLG_DEFAULT);
+            $em->persist($PageLayout);
+            $em->flush();
+        } else {
+            throw new \Exception(sprintf("%sはすでに登録されています。", self::URL));
+        }
+       
     }
     
+    /**
+     * dtb_page_layoutからページ情報を削除
+     */
     protected function deletePageLayout()
     {
+        $em = $this->app['orm.em'];
+        
         $DeviceType = $this->app['eccube.repository.master.device_type']
                 ->find(DeviceType::DEVICE_TYPE_PC);
         
@@ -68,16 +82,26 @@ class Version20170312115644 extends AbstractMigration
         }
     }
     
+    /**
+     * ルーティングからページ情報を取得
+     * 
+     * @param type $DeviceType
+     * @param type $url ルーティング
+     * @return boolean
+     */
     protected function findPageLayout($DeviceType, $url)
     {
         try{
-            $qb = $this->app['orm.em']->createQueryBuilder();
-            $qb
-                    ->from('Eccube\Entity\PageLayout', "pl")
-                    ->where('pl.Device = :DeviceType AND pl.url = :Url')
+            $em = $this->app['orm.em'];
+            
+            $PageLayout = $em->getRepository('Eccube\Entity\PageLayout');
+            $PageLayout = $PageLayout->createQueryBuilder("pl")
+                    ->where('pl.DeviceType = :DeviceType AND pl.url = :url')
                     ->setParameter("DeviceType", $DeviceType)
-                    ->setParameter("Url", $url);
-            return $qb->getSingleResult();
+                    ->setParameter("url", $url)
+                    ->getQuery()
+                    ->getSingleResult();
+            return $PageLayout;
         } catch (\Exception $e) {
             return false;
         }

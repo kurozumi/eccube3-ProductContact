@@ -13,6 +13,7 @@ namespace Plugin\ProductContact;
 
 use Eccube\Application;
 use Eccube\Event\EventArgs;
+use Eccube\Event\TemplateEvent;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -32,6 +33,11 @@ class ProductContactEvent
 
     public function onFrontProductDetailInitialize(EventArgs $event)
     {
+    }
+    
+    public function onRenderProductDetail(TemplateEvent $event)
+    {
+        
     }
 
 }

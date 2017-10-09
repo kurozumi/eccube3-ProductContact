@@ -57,14 +57,14 @@ class ProductContactServiceProvider implements ServiceProviderInterface
         // }
 
         // ログファイル設定
-        $app['monolog.logger.[lower_code]'] = $app->share(function ($app) {
+        $app['monolog.logger.plg_product_contact'] = $app->share(function ($app) {
 
-            $logger = new $app['monolog.logger.class']('[lower_code]');
+            $logger = new $app['monolog.logger.class']('plg_product_contact');
 
-            $filename = $app['config']['root_dir'].'/app/log/[lower_code].log';
+            $filename = $app['config']['root_dir'].'/app/log/plg_product_contact.log';
             $RotateHandler = new RotatingFileHandler($filename, $app['config']['log']['max_files'], Logger::INFO);
             $RotateHandler->setFilenameFormat(
-                '[lower_code]_{date}',
+                'plg_product_contact_{date}',
                 'Y-m-d'
             );
 
